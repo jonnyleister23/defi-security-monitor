@@ -194,8 +194,7 @@ st.write(st.session_state.get('connection_status', "Connection status unknown"))
 if st.button("Refresh Data"):
     with st.spinner("Refreshing blockchain data..."):
         refresh_data()
-        st.session_state.refresh_counter += 1
-        st.success(f"Data refreshed successfully! (Refresh #{st.session_state.refresh_counter})")
+        
 
 # Sidebar content
 st.sidebar.title("🚨Security Alerts🚨")
