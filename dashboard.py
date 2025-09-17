@@ -292,9 +292,18 @@ with tab1:
     else:
         st.info("No recent transactions")
     
-    # Refresh button
-    if st.button("Refresh Data"):
-        st.rerun()
+if st.button("Refresh Data"):
+    st.session_state.force_refresh = True
+    st.experimental_rerun()   # re-run the script
+
+# On re-run, check the flag
+if st.session_state.get("force_refresh", False):
+    # 👇 this is your global refresh logic
+    # Example: reload blockchain data, reset session state vars, etc.
+    # Anything you want recomputed goes here
+    
+    # IMPORTANT: reset flag so you don’t loop forever
+    st.session_state.force_refresh = False
 
 with tab2:
     # Security metrics
