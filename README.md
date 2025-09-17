@@ -64,7 +64,7 @@ The dashboard provides **live monitoring, threat detection, and security insight
 defi-security-monitor/
 ├── dashboard.py          # Main Streamlit dashboard
 ├── defi_monitor.py       # Core blockchain monitoring logic
-├── utils/                # Helper functions
+├── threat_map.py         # Threat Map functions
 ├── requirements.txt      # Python dependencies
 ├── .env.example          # Example environment file
 └── README.md             # Project documentation
