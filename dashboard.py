@@ -193,7 +193,7 @@ if sandwich_attacks:
     for attack in sandwich_attacks:
         st.sidebar.write(f"⚠️ {attack['address'][:10]}... in blocks {attack['blocks']}")
 else:
-    st.sidebar.success("✅ No Sandwhich Attacks detected")
+    st.sidebar.success("✅ No Sandwhich Attacks Detected")
 
 if rug_pull_alerts:
     st.sidebar.warning(f"🚨 Alert! Found {len(rug_pull_alerts)} Potential Rug Pull Activities")
@@ -209,14 +209,14 @@ if failed_tx_alerts:
     for alert in failed_tx_alerts:
         st.sidebar.write(f"⚠️ {alert['contract'][:10]}... ({alert['failed_count']} failures)")
 else:
-    st.sidebar.success("✅ No honeypot contracts detected")
+    st.sidebar.success("✅ No Honeypot Contracts Detected")
 
 if token_traps:
     st.sidebar.error(f"🕳️ {len(token_traps)} Potential Token Traps Detected!")
     for trap in token_traps:
         st.sidebar.write(f"⚠️ {trap['contract'][:10]}... (In: {trap['incoming']}, Out: {trap['outgoing']})")
 else:
-    st.sidebar.success("✅ No token traps detected")
+    st.sidebar.success("✅ No Token Traps Detected")
 
 with st.sidebar.expander("ℹ️ What are these alerts?"):
     st.markdown("""
