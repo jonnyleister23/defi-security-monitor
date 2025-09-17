@@ -79,10 +79,18 @@ current_block = w3.eth.block_number
 gas_price = w3.eth.gas_price/1000000000
 
 # Store gas price history
-if 'gas_prices' not in st.session_state:
-    st.session_state.gas_prices = [] 
-st.session_state.gas_prices.append(gas_price)
 
+# Store gas price history - FIXED VERSION
+if 'gas_prices' not in st.session_state:
+    st.session_state.gas_prices = []
+    st.session_state.last_update_time = time.time()
+    st.session_state.gas_prices.append(gas_price)
+else:
+    # Only update every 30 seconds
+    current_time = time.time()
+    if current_time - st.session_state.last_update_time > 30:
+        st.session_state.gas_prices.append(gas_price)
+        st.session_state.last_update_time = current_time
 # Get monitoring data
 large_txs = monitor_large_transactions()
 contract_txs = monitor_smart_contract_interactions()
