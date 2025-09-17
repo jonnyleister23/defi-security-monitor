@@ -421,8 +421,7 @@ with tab3:
         
         # Simulated historical data
         st.markdown("""
-        Historical threat data shows patterns of activity over time. In a production system, 
-        this would display trends from your threat database.
+        Historical threat data shows patterns of activity over time
         """)
         
         # Create sample historical data
