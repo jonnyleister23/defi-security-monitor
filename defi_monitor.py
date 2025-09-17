@@ -5,7 +5,10 @@ import time
 
 # Getting API key securely
 load_dotenv()
-infura_key = st.secrets.get("INFURA_KEY", os.getenv("INFURA_KEY"))
+try:
+    infura_key = st.secrets["INFURA_KEY"]
+except (KeyError, AttributeError):
+    infura_key = os.getenv("INFURA_KEY")
 
 w3 = Web3(Web3.HTTPProvider(f'https://mainnet.infura.io/v3/{infura_key}'))
 
