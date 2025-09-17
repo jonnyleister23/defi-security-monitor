@@ -17,7 +17,8 @@ infura_url = f"https://mainnet.infura.io/v3/{infura_key}"
 # Create Web3 connection
 w3 = Web3(Web3.HTTPProvider(infura_url))
 
-
+if not w3.is_connected():
+    raise ConnectionError("Failed to connect to Infura. Check your INFURA_KEY and network.")
 # TEST CONNECTION
 print("🔗 Connecting to Ethereum mainnet...")
 print(f"✅ Connected: {w3.is_connected()}")
