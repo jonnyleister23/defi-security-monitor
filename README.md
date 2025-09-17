@@ -4,15 +4,19 @@
 
 ## Overview
 
-DeFi Security Monitor is a real-time blockchain security monitoring system that detects and visualizes potential threats on the Ethereum network. The dashboard provides comprehensive security analysis, threat detection, and educational resources for blockchain security.
+**DeFi Security Monitor** is a real-time blockchain security monitoring system that detects and visualizes potential threats on the Ethereum network.  
 
-## Features
+The dashboard provides **live monitoring, threat detection, and security insights** for DeFi users while also serving as an educational tool for blockchain security.
+
+---
+
+## ✨ Features
 
 ### 🔍 Real-Time Monitoring
-- Live Ethereum blockchain connection
+- Live Ethereum blockchain connection via Infura
 - Gas price tracking and visualization
-- Smart contract interaction detection
-- Large transaction monitoring
+- Smart contract interaction monitoring
+- Large transaction detection
 
 ### 🛡️ Security Analysis
 - Risk scoring system
@@ -20,14 +24,13 @@ DeFi Security Monitor is a real-time blockchain security monitoring system that 
 - Transaction volume analysis
 - Security metrics dashboard
 
-### 🚨 Threat Detection Algorithms
-- High-frequency activity detection
-- Sandwich attack identification
+### 🚨 Threat Detection
+- High-frequency activity alerts
+- Sandwich attack detection
 - Rug pull early warning system
-- Token trap detection
-- Honeypot contract alerts
+- Token trap & honeypot contract detection
 
-### 🌐 Threat Visualization
+### 🌐 Visualization
 - Global threat mapping
 - Historical threat patterns
 - Known malicious address database integration
@@ -35,7 +38,7 @@ DeFi Security Monitor is a real-time blockchain security monitoring system that 
 ### 👛 Wallet Scanner
 - Address risk assessment
 - Malicious address checking
-- Etherscan integration
+- Etherscan API integration
 
 ### 📚 Security Resources
 - DeFi security best practices
@@ -43,17 +46,25 @@ DeFi Security Monitor is a real-time blockchain security monitoring system that 
 - Security incident case studies
 - Interactive security quiz
 
-## Technologies Used
+---
 
-- **Python**: Core programming language
-- **Web3.py**: Ethereum blockchain interaction
-- **Streamlit**: Dashboard interface and visualization
-- **Plotly**: Interactive charts and graphs
-- **MyEtherWallet API**: Malicious address database
+## 🛠 Technologies Used
 
-## Installation
+- **Python**: Core programming language  
+- **Web3.py**: Ethereum blockchain interaction  
+- **Streamlit**: Dashboard interface & visualization  
+- **Plotly**: Interactive charts & graphs  
+- **MyEtherWallet API**: Malicious address database  
 
-1. Clone the repository:
-```bash
-git clone https://github.com/jonnyleister23/defi-security-monitor.git
-cd defi-security-monitor
+---
+
+## 📂 Project Structure
+
+```plaintext
+defi-security-monitor/
+├── dashboard.py          # Main Streamlit dashboard
+├── defi_monitor.py       # Core blockchain monitoring logic
+├── utils/                # Helper functions
+├── requirements.txt      # Python dependencies
+├── .env.example          # Example environment file
+└── README.md             # Project documentation
