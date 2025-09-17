@@ -1,6 +1,6 @@
 # DeFi Security Monitor
 
-![DeFi Security Monitor Dashboard](<img width="1910" height="917" alt="image" src="https://github.com/user-attachments/assets/500924d7-96e9-4697-ba6b-bb963aae35e5" />
+![DeFi Security Monitor Dashboard](<img width="1910" height="921" alt="Screenshot 2025-09-16 210435" src="https://github.com/user-attachments/assets/68d7064b-c4f1-4f18-9aad-79080299cb7e" />
 )
 
 ## Overview
