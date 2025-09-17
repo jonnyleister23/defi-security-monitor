@@ -11,8 +11,6 @@ st.markdown("""
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
 """, unsafe_allow_html=True)
 
-
-
 # Simple rate limiter class - add after imports
 class RateLimiter:
     def __init__(self, max_calls, time_frame):
@@ -31,11 +29,7 @@ class RateLimiter:
         return False
 
 # Create limiter instances
-wallet_limiter = RateLimiter(max_calls=10, time_frame=60)  # 5 calls per minute
-
-
-
-
+wallet_limiter = RateLimiter(max_calls=10, time_frame=60)  # 10 calls per minute
 
 # Add custom CSS for centered text
 st.markdown("""
@@ -68,160 +62,178 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Connection status
-if w3.is_connected():
-    st.write("🟢 Connected to Ethereum")
-else:
-    st.write("🔴 Not Connected")
-
-# Get blockchain data
-current_block = w3.eth.block_number
-gas_price = w3.eth.gas_price/1000000000
-
-# Store gas price history
-
-# Store gas price history - FIXED VERSION
+# Initialize session state variables if they don't exist
 if 'gas_prices' not in st.session_state:
     st.session_state.gas_prices = []
     st.session_state.last_update_time = time.time()
-    st.session_state.gas_prices.append(gas_price)
-else:
-    # Only update every 30 seconds
-    current_time = time.time()
-    if current_time - st.session_state.last_update_time > 30:
-        st.session_state.gas_prices.append(gas_price)
-        st.session_state.last_update_time = current_time
-# Get monitoring data
-large_txs = monitor_large_transactions()
-contract_txs = monitor_smart_contract_interactions()
-failed_tx_alerts = monitor_failed_transactions()
 
-# Suspicious patterns detection
-address_counts = {}
-for tx in contract_txs:
-    address = tx['from']
-    if address in address_counts:
-        address_counts[address] += 1
-    else:
-        address_counts[address] = 1
-suspicious_addresses = []
-for address, count in address_counts.items():
-    if count > 2:
-        suspicious_addresses.append({'address': address, 'count': count})
-
-# Sandwich attack detection
 if 'transaction_history' not in st.session_state:
     st.session_state.transaction_history = []
 
-# Only keep transactions from last 3 blocks
-current_block = w3.eth.block_number
-recent_transactions = []
-for tx in st.session_state.transaction_history:
-    if tx['block'] >= current_block - 2:  # Keep last 3 blocks
-        recent_transactions.append(tx)
-st.session_state.transaction_history = recent_transactions
+if 'refresh_counter' not in st.session_state:
+    st.session_state.refresh_counter = 0
 
-# Detect sandwich attacks
-sandwich_attacks = []
-for tx1 in recent_transactions:
-    for tx2 in recent_transactions:
-        if (tx1['address'] == tx2['address'] and tx1['token'] == tx2['token'] and tx2['block'] == tx1['block'] + 1):     
-            sandwich_attacks.append({'address': tx1['address'], 'token': tx1['token'],'blocks': [tx1['block'], tx2['block']]})
+# Function to refresh data
+def refresh_data():
+    # Connection status
+    if w3.is_connected():
+        st.session_state.connection_status = "🟢 Connected to Ethereum"
+    else:
+        st.session_state.connection_status = "🔴 Not Connected"
 
-# Detect potential rug pulls
-rug_pull_alerts = []
-for tx in contract_txs:
-    eth_amount = tx['value_eth']
-    if eth_amount >= 100:  # Critical risk
-        risk_level = "🔴 CRITICAL"
-        rug_pull_alerts.append({'address': tx['from'], 'amount': eth_amount, 'risk': risk_level})
-    elif eth_amount >= 50:  # High risk  
-        risk_level = "🟠 HIGH"
-        rug_pull_alerts.append({'address': tx['from'], 'amount': eth_amount, 'risk': risk_level})
-    elif eth_amount >= 10:  # Medium risk
-        risk_level = "🟡 MEDIUM"
-        rug_pull_alerts.append({'address': tx['from'], 'amount': eth_amount, 'risk': risk_level})
+    # Get blockchain data
+    st.session_state.current_block = w3.eth.block_number
+    st.session_state.gas_price = w3.eth.gas_price/1000000000
 
-# Token Traps detection
-contract_activity = {}
-for tx in contract_txs:
-    from_address = tx['from']
-    to_address = tx['to']
-    if from_address not in contract_activity:
-        contract_activity[from_address] = {'incoming': 0, 'outgoing': 0}
-    if to_address not in contract_activity:
-        contract_activity[to_address] = {'incoming': 0, 'outgoing': 0}
-    contract_activity[from_address]['outgoing'] += 1
-    contract_activity[to_address]['incoming'] += 1
+    # Update gas price history - only update every 30 seconds
+    current_time = time.time()
+    if current_time - st.session_state.last_update_time > 30:
+        st.session_state.gas_prices.append(st.session_state.gas_price)
+        st.session_state.last_update_time = current_time
+        
+    # Get monitoring data
+    st.session_state.large_txs = monitor_large_transactions()
+    st.session_state.contract_txs = monitor_smart_contract_interactions()
+    st.session_state.failed_tx_alerts = monitor_failed_transactions()
 
-# Find suspicious contracts (only receive, never send)
-token_traps = []
-for address, activity in contract_activity.items():
-    incoming = activity['incoming']
-    outgoing = activity['outgoing']
-    if incoming >= 3 and outgoing == 0:  # Gets 3+ transactions but sends 0
-        token_traps.append({
-            'contract': address,
-            'incoming': incoming,
-            'outgoing': outgoing
-        })
+    # Suspicious patterns detection
+    address_counts = {}
+    for tx in st.session_state.contract_txs:
+        address = tx['from']
+        if address in address_counts:
+            address_counts[address] += 1
+        else:
+            address_counts[address] = 1
+    
+    st.session_state.suspicious_addresses = []
+    for address, count in address_counts.items():
+        if count > 2:
+            st.session_state.suspicious_addresses.append({'address': address, 'count': count})
 
-# Calculate risk score
-risk_score = 0
-risk_factors = []
-if suspicious_addresses:
-    risk_score += len(suspicious_addresses) * 10
-    risk_factors.append(f"High-frequency activity: +{len(suspicious_addresses) * 10}")
-if sandwich_attacks:
-    risk_score += len(sandwich_attacks) * 15
-    risk_factors.append(f"Sandwich attacks: +{len(sandwich_attacks) * 15}")
-if rug_pull_alerts:
-    risk_score += len(rug_pull_alerts) * 20
-    risk_factors.append(f"Potential rug pulls: +{len(rug_pull_alerts) * 20}")
-if failed_tx_alerts:
-    risk_score += len(failed_tx_alerts) * 5
-    risk_factors.append(f"Honeypot contracts: +{len(failed_tx_alerts) * 5}")
-if token_traps:
-    risk_score += len(token_traps) * 15
-    risk_factors.append(f"Token traps: +{len(token_traps) * 15}")
+    # Only keep transactions from last 3 blocks
+    current_block = w3.eth.block_number
+    recent_transactions = []
+    for tx in st.session_state.transaction_history:
+        if tx['block'] >= current_block - 2:  # Keep last 3 blocks
+            recent_transactions.append(tx)
+    st.session_state.transaction_history = recent_transactions
+
+    # Detect sandwich attacks
+    st.session_state.sandwich_attacks = []
+    for tx1 in recent_transactions:
+        for tx2 in recent_transactions:
+            if (tx1['address'] == tx2['address'] and tx1['token'] == tx2['token'] and tx2['block'] == tx1['block'] + 1):     
+                st.session_state.sandwich_attacks.append({'address': tx1['address'], 'token': tx1['token'],'blocks': [tx1['block'], tx2['block']]})
+
+    # Detect potential rug pulls
+    st.session_state.rug_pull_alerts = []
+    for tx in st.session_state.contract_txs:
+        eth_amount = tx['value_eth']
+        if eth_amount >= 100:  # Critical risk
+            risk_level = "🔴 CRITICAL"
+            st.session_state.rug_pull_alerts.append({'address': tx['from'], 'amount': eth_amount, 'risk': risk_level})
+        elif eth_amount >= 50:  # High risk  
+            risk_level = "🟠 HIGH"
+            st.session_state.rug_pull_alerts.append({'address': tx['from'], 'amount': eth_amount, 'risk': risk_level})
+        elif eth_amount >= 10:  # Medium risk
+            risk_level = "🟡 MEDIUM"
+            st.session_state.rug_pull_alerts.append({'address': tx['from'], 'amount': eth_amount, 'risk': risk_level})
+
+    # Token Traps detection
+    contract_activity = {}
+    for tx in st.session_state.contract_txs:
+        from_address = tx['from']
+        to_address = tx['to']
+        if from_address not in contract_activity:
+            contract_activity[from_address] = {'incoming': 0, 'outgoing': 0}
+        if to_address not in contract_activity:
+            contract_activity[to_address] = {'incoming': 0, 'outgoing': 0}
+        contract_activity[from_address]['outgoing'] += 1
+        contract_activity[to_address]['incoming'] += 1
+
+    # Find suspicious contracts (only receive, never send)
+    st.session_state.token_traps = []
+    for address, activity in contract_activity.items():
+        incoming = activity['incoming']
+        outgoing = activity['outgoing']
+        if incoming >= 3 and outgoing == 0:  # Gets 3+ transactions but sends 0
+            st.session_state.token_traps.append({
+                'contract': address,
+                'incoming': incoming,
+                'outgoing': outgoing
+            })
+
+    # Calculate risk score
+    st.session_state.risk_score = 0
+    st.session_state.risk_factors = []
+    if st.session_state.suspicious_addresses:
+        st.session_state.risk_score += len(st.session_state.suspicious_addresses) * 10
+        st.session_state.risk_factors.append(f"High-frequency activity: +{len(st.session_state.suspicious_addresses) * 10}")
+    if st.session_state.sandwich_attacks:
+        st.session_state.risk_score += len(st.session_state.sandwich_attacks) * 15
+        st.session_state.risk_factors.append(f"Sandwich attacks: +{len(st.session_state.sandwich_attacks) * 15}")
+    if st.session_state.rug_pull_alerts:
+        st.session_state.risk_score += len(st.session_state.rug_pull_alerts) * 20
+        st.session_state.risk_factors.append(f"Potential rug pulls: +{len(st.session_state.rug_pull_alerts) * 20}")
+    if st.session_state.failed_tx_alerts:
+        st.session_state.risk_score += len(st.session_state.failed_tx_alerts) * 5
+        st.session_state.risk_factors.append(f"Honeypot contracts: +{len(st.session_state.failed_tx_alerts) * 5}")
+    if st.session_state.token_traps:
+        st.session_state.risk_score += len(st.session_state.token_traps) * 15
+        st.session_state.risk_factors.append(f"Token traps: +{len(st.session_state.token_traps) * 15}")
+
+# Initial data load
+if 'initialized' not in st.session_state:
+    refresh_data()
+    st.session_state.initialized = True
+
+# Display connection status
+st.write(st.session_state.get('connection_status', "Connection status unknown"))
+
+# Refresh button with counter to prevent infinite loops
+if st.button("Refresh Data"):
+    with st.spinner("Refreshing blockchain data..."):
+        refresh_data()
+        st.session_state.refresh_counter += 1
+        st.success(f"Data refreshed successfully! (Refresh #{st.session_state.refresh_counter})")
 
 # Sidebar content
 st.sidebar.title("🚨Security Alerts🚨")
 
 # Display alerts in sidebar
-if suspicious_addresses:
-    st.sidebar.warning(f"🚨 Alert! Found {len(suspicious_addresses)} suspicious addresses")
-    for item in suspicious_addresses:
+if st.session_state.get('suspicious_addresses', []):
+    st.sidebar.warning(f"🚨 Alert! Found {len(st.session_state.suspicious_addresses)} suspicious addresses")
+    for item in st.session_state.suspicious_addresses:
         st.sidebar.write(f"Suspicious Address: {item['address']} Tx Count: {item['count']}")
 else:
     st.sidebar.success("✅ No Suspicious Activity Detected") 
 
-if sandwich_attacks:
-    st.sidebar.error(f"🥪 {len(sandwich_attacks)} Potential Sandwich Attacks!")
-    for attack in sandwich_attacks:
+if st.session_state.get('sandwich_attacks', []):
+    st.sidebar.error(f"🥪 {len(st.session_state.sandwich_attacks)} Potential Sandwich Attacks!")
+    for attack in st.session_state.sandwich_attacks:
         st.sidebar.write(f"⚠️ {attack['address'][:10]}... in blocks {attack['blocks']}")
 else:
-    st.sidebar.success("✅ No Sandwhich Attacks Detected")
+    st.sidebar.success("✅ No Sandwich Attacks Detected")
 
-if rug_pull_alerts:
-    st.sidebar.warning(f"🚨 Alert! Found {len(rug_pull_alerts)} Potential Rug Pull Activities")
-    for alert in rug_pull_alerts:
+if st.session_state.get('rug_pull_alerts', []):
+    st.sidebar.warning(f"🚨 Alert! Found {len(st.session_state.rug_pull_alerts)} Potential Rug Pull Activities")
+    for alert in st.session_state.rug_pull_alerts:
         st.sidebar.write(f"{alert['risk']} {alert['address'][:10]}... withdrew {alert['amount']:.2f} ETH")
 else:
     st.sidebar.success("✅ No Rug Pulls Detected")
 
 st.sidebar.title("🎣Phishing Alerts🎣")
 
-if failed_tx_alerts:
-    st.sidebar.error(f"🎣 {len(failed_tx_alerts)} Potential Honeypots Detected!")
-    for alert in failed_tx_alerts:
+if st.session_state.get('failed_tx_alerts', []):
+    st.sidebar.error(f"🎣 {len(st.session_state.failed_tx_alerts)} Potential Honeypots Detected!")
+    for alert in st.session_state.failed_tx_alerts:
         st.sidebar.write(f"⚠️ {alert['contract'][:10]}... ({alert['failed_count']} failures)")
 else:
     st.sidebar.success("✅ No Honeypot Contracts Detected")
 
-if token_traps:
-    st.sidebar.error(f"🕳️ {len(token_traps)} Potential Token Traps Detected!")
-    for trap in token_traps:
+if st.session_state.get('token_traps', []):
+    st.sidebar.error(f"🕳️ {len(st.session_state.token_traps)} Potential Token Traps Detected!")
+    for trap in st.session_state.token_traps:
         st.sidebar.write(f"⚠️ {trap['contract'][:10]}... (In: {trap['incoming']}, Out: {trap['outgoing']})")
 else:
     st.sidebar.success("✅ No Token Traps Detected")
@@ -239,16 +251,8 @@ with st.sidebar.expander("ℹ️ What are these alerts?"):
     **Token Traps:** Contracts that receive tokens but never send any out, indicating a potential scam.
     """)
 
-
-
-
-
-
-
-
-
 # Create tabs for different dashboard sections
-tab1, tab2, tab3, tab4,tab5 = st.tabs(["🔍 Monitoring", "🛡️ Security Analysis", "🌐 Threat Map", "👛 Wallet Scanner","📚 Security Resources"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔍 Monitoring", "🛡️ Security Analysis", "🌐 Threat Map", "👛 Wallet Scanner","📚 Security Resources"])
 
 with tab1:
     # Gas price chart
@@ -267,17 +271,18 @@ with tab1:
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Current Block", f"{current_block:,}")
+        st.metric("Current Block", f"{st.session_state.get('current_block', 0):,}")
     with col2:
-        st.metric("Gas Price", f"{gas_price:.2f} Gwei")
+        st.metric("Gas Price", f"{st.session_state.get('gas_price', 0):.2f} Gwei")
     with col3:
-        st.metric("Large Transactions", len(large_txs))
+        st.metric("Large Transactions", len(st.session_state.get('large_txs', [])))
     with col4:
-        st.metric("Smart Contract Interactions", len(contract_txs))
+        st.metric("Smart Contract Interactions", len(st.session_state.get('contract_txs', [])))
     
     # Recent activity
     st.markdown("<br>", unsafe_allow_html=True)
     st.subheader("Recent Activity")
+    contract_txs = st.session_state.get('contract_txs', [])
     if contract_txs:
         tx_data = []
         for i, tx in enumerate(contract_txs[:5]):
@@ -291,24 +296,13 @@ with tab1:
         st.table(tx_data)
     else:
         st.info("No recent transactions")
-    
-if st.button("Refresh Data"):
-    st.session_state["do_refresh"] = True
-    st.experimental_rerun()  # restart the script
-
-# --- On rerun, check the flag ---
-if st.session_state.get("do_refresh", False):
-    # 👇 Refresh logic goes here
-    st.write("Refreshing all data at", time.strftime("%X"))
-
-    # Reset flag so it doesn’t loop
-    st.session_state["do_refresh"] = False
 
 with tab2:
     # Security metrics
     st.subheader("Security Analysis")
     security_col1, security_col2, security_col3, security_col4 = st.columns(4)
     with security_col1:
+        risk_score = st.session_state.get('risk_score', 0)
         if risk_score == 0:
             st.metric("Risk Score", "0", "Low")
         elif risk_score < 30:
@@ -317,30 +311,41 @@ with tab2:
             st.metric("Risk Score", str(risk_score), "HIGH", delta_color="inverse")
     
     with security_col2:
+        gas_price = st.session_state.get('gas_price', 0)
         gas_congestion = "Low" if gas_price < 15 else "Medium" if gas_price < 50 else "High"
         st.metric("Network Congestion", gas_congestion)
         
     with security_col3:
-        tx_volume = len(contract_txs)
+        tx_volume = len(st.session_state.get('contract_txs', []))
         st.metric("Transaction Volume", tx_volume)
         
     with security_col4:
+        suspicious_addresses = st.session_state.get('suspicious_addresses', [])
+        sandwich_attacks = st.session_state.get('sandwich_attacks', [])
+        rug_pull_alerts = st.session_state.get('rug_pull_alerts', [])
+        failed_tx_alerts = st.session_state.get('failed_tx_alerts', [])
+        token_traps = st.session_state.get('token_traps', [])
+        
         total_alerts = len(suspicious_addresses) + len(sandwich_attacks) + len(rug_pull_alerts) + len(failed_tx_alerts) + len(token_traps)
         alert_status = "None" if total_alerts == 0 else "Low" if total_alerts < 3 else "High"
         st.metric("Security Alerts", total_alerts, alert_status)
     
     # Risk factors
+    risk_factors = st.session_state.get('risk_factors', [])
     if risk_factors:
         st.markdown("<br>", unsafe_allow_html=True)
         with st.expander("View Risk Factor Details"):
             for factor in risk_factors:
                 st.write(factor)
-    
-    # Add token prices section here if you have it
-    # display_token_prices()
 
 with tab3:
     # Your existing threat map code
+    suspicious_addresses = st.session_state.get('suspicious_addresses', [])
+    sandwich_attacks = st.session_state.get('sandwich_attacks', [])
+    rug_pull_alerts = st.session_state.get('rug_pull_alerts', [])
+    failed_tx_alerts = st.session_state.get('failed_tx_alerts', [])
+    token_traps = st.session_state.get('token_traps', [])
+    
     display_threat_map(suspicious_addresses, sandwich_attacks, rug_pull_alerts, failed_tx_alerts, token_traps)
     
     # Add interactive threat details
@@ -504,7 +509,6 @@ with tab3:
                 with col1:
                     if st.button("← Previous") and st.session_state.current_page > 1:
                         st.session_state.current_page -= 1
-                        st.rerun()
             
                 with col2:
                     page_numbers = []
@@ -517,17 +521,15 @@ with tab3:
                         with page_cols[i]:
                             if st.button(str(page), key=f"page_{page}"):
                                 st.session_state.current_page = page
-                                st.rerun()
             
                 with col3:
                     if st.button("Next →") and st.session_state.current_page < total_pages:
                         st.session_state.current_page += 1
-                        st.rerun()
             
                 # Display current page info
                 st.markdown(f"**Page {st.session_state.current_page} of {total_pages}**")
             
-                #   Calculate slice for current page
+                # Calculate slice for current page
                 start_idx = (st.session_state.current_page - 1) * items_per_page
                 end_idx = min(start_idx + items_per_page, len(st.session_state.mew_addresses))
             
@@ -539,7 +541,6 @@ with tab3:
         else:
             st.info("Click the button to load the MyEtherWallet list of known malicious addresses")
 
-
 with tab4:
     st.subheader("Wallet Risk Assessment")
     
@@ -550,46 +551,48 @@ with tab4:
         if not is_valid_eth_address(wallet_address):
             st.error("Invalid Ethereum address format. Please enter a valid 42-character address starting with 0x.")
         else:
-            with st.spinner("Scanning wallet..."):
-                try:
-                    # Check if address is in known malicious list
-                    is_malicious = False
-                    malicious_comment = ""
-                    
-                    if 'mew_addresses' in st.session_state and st.session_state.mew_addresses:
-                        for addr in st.session_state.mew_addresses:
-                            if addr["Address"].lower() == wallet_address.lower():
-                                is_malicious = True
-                                malicious_comment = addr.get("Comment", "Known malicious address")
-                                break
-                    
-                    # Display results based on malicious check only
-                    if is_malicious:
-                        st.error("⚠️ HIGH RISK WALLET DETECTED!")
-                        st.error(f"This address is flagged as malicious: {malicious_comment}")
+            # Check if we're within rate limits
+            if wallet_limiter.is_allowed(wallet_address):
+                with st.spinner("Scanning wallet..."):
+                    try:
+                        # Check if address is in known malicious list
+                        is_malicious = False
+                        malicious_comment = ""
                         
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.metric("Risk Score", "95/100", "Critical", delta_color="inverse")
+                        if 'mew_addresses' in st.session_state and st.session_state.mew_addresses:
+                            for addr in st.session_state.mew_addresses:
+                                if addr["Address"].lower() == wallet_address.lower():
+                                    is_malicious = True
+                                    malicious_comment = addr.get("Comment", "Known malicious address")
+                                    break
                         
-                        st.warning("⚠️ DO NOT send funds to this address!")
-                    else:
-                        st.success("Wallet scan complete!")
-                        st.info("No known malicious activity associated with this wallet.")
-                    
-                    # Link to Etherscan for more details
-                    st.subheader("View Details")
-                    st.info("To view detailed wallet information, check this address on Etherscan:")
-                    # Sanitize the address for security
-                    safe_address = wallet_address.replace('<', '').replace('>', '').replace('"', '').replace("'", '')
-                    st.markdown(f"[View on Etherscan](https://etherscan.io/address/{safe_address})")
-                    
-                except Exception as e:
-                    st.error(f"Error scanning address: {str(e)}")
+                        # Display results based on malicious check only
+                        if is_malicious:
+                            st.error("⚠️ HIGH RISK WALLET DETECTED!")
+                            st.error(f"This address is flagged as malicious: {malicious_comment}")
+                            
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.metric("Risk Score", "95/100", "Critical", delta_color="inverse")
+                            
+                            st.warning("⚠️ DO NOT send funds to this address!")
+                        else:
+                            st.success("Wallet scan complete!")
+                            st.info("No known malicious activity associated with this wallet.")
+                        
+                        # Link to Etherscan for more details
+                        st.subheader("View Details")
+                        st.info("To view detailed wallet information, check this address on Etherscan:")
+                        # Sanitize the address for security
+                        safe_address = wallet_address.replace('<', '').replace('>', '').replace('"', '').replace("'", '')
+                        st.markdown(f"[View on Etherscan](https://etherscan.io/address/{safe_address})")
+                        
+                    except Exception as e:
+                        st.error(f"Error scanning address: {str(e)}")
+            else:
+                st.warning("Rate limit exceeded. Please wait before scanning another wallet.")
     else:
         st.info("Enter an Ethereum address to perform a security assessment")
-
-
 
 with tab5:
     st.subheader("DeFi Security Resources")
@@ -791,8 +794,6 @@ with tab5:
                 st.error("Question 2: Incorrect. Multiple security audits are a positive sign, not a red flag for rug pulls.")
                 
             st.write(f"Your score: {score}/2")
-
-
 
 # Footer
 st.markdown("---")
