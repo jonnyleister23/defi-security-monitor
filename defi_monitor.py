@@ -11,7 +11,12 @@ try:
 except (KeyError, AttributeError):
     infura_key = os.getenv("INFURA_KEY")
 
-w3 = Web3(Web3.HTTPProvider(f'https://mainnet.infura.io/v3/{infura_key}'))
+# Build full Infura URL
+infura_url = f"https://mainnet.infura.io/v3/{infura_key}"
+
+# Create Web3 connection
+w3 = Web3(Web3.HTTPProvider(infura_url))
+
 
 # TEST CONNECTION
 print("🔗 Connecting to Ethereum mainnet...")
