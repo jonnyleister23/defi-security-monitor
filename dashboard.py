@@ -186,7 +186,7 @@ if suspicious_addresses:
     for item in suspicious_addresses:
         st.sidebar.write(f"Suspicious Address: {item['address']} Tx Count: {item['count']}")
 else:
-    st.sidebar.success("✅ No suspicious activity detected") 
+    st.sidebar.success("✅ No Suspicious Activity Detected") 
 
 if sandwich_attacks:
     st.sidebar.error(f"🥪 {len(sandwich_attacks)} Potential Sandwich Attacks!")
