@@ -1,6 +1,7 @@
 # DeFi Security Monitor
 
-![DeFi Security Monitor Dashboard](screenshots/dashboard.png)
+![DeFi Security Monitor Dashboard](<img width="1910" height="917" alt="image" src="https://github.com/user-attachments/assets/500924d7-96e9-4697-ba6b-bb963aae35e5" />
+)
 
 ## Overview
 
