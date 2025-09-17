@@ -55,5 +55,5 @@ DeFi Security Monitor is a real-time blockchain security monitoring system that 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/defi-security-monitor.git
+git clone https://github.com/jonnyleister23/defi-security-monitor.git
 cd defi-security-monitor
