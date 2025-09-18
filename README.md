@@ -1,6 +1,6 @@
 # DeFi Security Monitor
 
-![DeFi Security Monitor Dashboard]()
+[![Watch the demo](https://youtu.be/BjWg1ltNm_Q)
 
 ## Overview
 
