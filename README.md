@@ -1,6 +1,6 @@
 # DeFi Security Monitor
 
-[![Watch the demo](https://youtu.be/BjWg1ltNm_Q)
+![Watch the demo](https://youtu.be/BjWg1ltNm_Q)
 
 ## Overview
 
