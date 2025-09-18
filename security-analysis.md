@@ -47,10 +47,6 @@ Each threat type contributes differently:
 
 ---
 
-### 4. Risk Factor Details  
-An **expandable section** provides detailed insights into specific risk factors contributing to the risk score, helping users understand the **nature and severity** of detected threats.  
-
----
 
 ## ⚡ Security Applications  
 
