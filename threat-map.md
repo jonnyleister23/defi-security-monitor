@@ -1,5 +1,6 @@
 Threat Map Tab
 
+![DeFi Security Monitor Dashboard](screenshots/Threatmap.png)
 
 Overview
 The Threat Map tab provides a global visualization of blockchain security threats, offering geographical context to detected malicious activities and a comprehensive threat intelligence dashboard.
