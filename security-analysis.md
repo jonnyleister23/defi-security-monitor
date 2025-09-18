@@ -15,10 +15,10 @@ Security Alerts -> Count of active security warnings
 2. Risk Scoring System    
 The risk score is calculated based on detected threats:    
 
-0 points: No threats detected (Low risk)    
-1-29 points: Some threats detected (Medium risk)    
-30+ points: Multiple serious threats detected (High risk)    
-Each type of threat contributes different point values to the overall risk score:    
+  0 points: No threats detected (Low risk)    
+  1-29 points: Some threats detected (Medium risk)    
+  30+ points: Multiple serious threats detected (High risk)    
+  Each type of threat contributes different point values to the overall risk score:    
 
 High-frequency activity: 10 points per instance    
 Sandwich attacks: 15 points per instance    
