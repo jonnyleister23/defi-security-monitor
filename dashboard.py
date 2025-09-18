@@ -11,7 +11,7 @@ st.markdown("""
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
 """, unsafe_allow_html=True)
 
-# Simple rate limiter class - add after imports
+# RateLimiter
 class RateLimiter:
     def __init__(self, max_calls, time_frame):
         self.max_calls = max_calls
@@ -31,7 +31,7 @@ class RateLimiter:
 # Create limiter instances
 wallet_limiter = RateLimiter(max_calls=10, time_frame=60)  # 10 calls per minute
 
-# Add custom CSS for centered text
+# CSS for centered text
 st.markdown("""
 <style>
     .centered {
@@ -46,7 +46,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Add a professional header with logo and description
+# Header
 st.markdown("""
 <div style="margin-bottom: 20px;">
     <div style="display: flex; align-items: center; justify-content: center;">
@@ -63,6 +63,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Initialize session state variables if they don't exist
+#st.session_state maintains old data after refresh
 if 'gas_prices' not in st.session_state:
     st.session_state.gas_prices = []
     st.session_state.last_update_time = time.time()
@@ -73,7 +74,7 @@ if 'transaction_history' not in st.session_state:
 if 'refresh_counter' not in st.session_state:
     st.session_state.refresh_counter = 0
 
-# Function to refresh data
+#Refresh data
 def refresh_data():
     # Connection status
     if w3.is_connected():
@@ -151,7 +152,7 @@ def refresh_data():
         contract_activity[from_address]['outgoing'] += 1
         contract_activity[to_address]['incoming'] += 1
 
-    # Find suspicious contracts (only receive, never send)
+    # Find suspicious contracts that only recieves
     st.session_state.token_traps = []
     for address, activity in contract_activity.items():
         incoming = activity['incoming']
