@@ -40,7 +40,7 @@ The intelligence section includes **three key tabs**:
   - Rug Pulls  
   - Honeypot Contracts  
   - Token Traps  
-
+- **Only historical data (Does NOT update)
 #### 🔹 Known Attackers  
 - Database of **identified malicious addresses**  
 - Sourced from **MyEtherWallet’s darklist**  
