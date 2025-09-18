@@ -16,7 +16,7 @@ The **Threat Map** tab provides a **global visualization of blockchain security 
   - 🟠 **Orange dots** → Medium severity threats  
   - 🔵 **Blue dots** → Low severity threats
  
-- 📌 **Geolocation is NOT accurate (Randomizes coordinates based on wallet address (Same wallet will show up at the same coordinates))  
+- 📌 **Geolocation is NOT accurate
 
 ---
 
