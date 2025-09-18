@@ -1,6 +1,6 @@
 # DeFi Security Monitor
 
-![DeFi Security Monitor Dashboard](screenshots/dashboard.png)
+![DeFi Security Monitor Dashboard]()
 
 ## Overview
 
