@@ -1,3 +1,3 @@
 # Monitoring Tab
 
-![DeFi Security Monitor Dashboard](screenshots/)
+![DeFi Security Monitor Dashboard](screenshots/dashboard.png)
