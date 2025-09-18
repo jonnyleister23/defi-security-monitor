@@ -1,6 +1,6 @@
 # DeFi Security Monitor
 
-##Live App    
+## Live App    
 
 https://defi-security-monitor-project.streamlit.app    
 
