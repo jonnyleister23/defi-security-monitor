@@ -43,7 +43,7 @@ The intelligence section includes **three key tabs**:
 - **Only historical data (Does NOT update)
 #### 🔹 Known Attackers  
 - Database of **identified malicious addresses**  
-- Sourced from **MyEtherWallet’s darklist**  
+- Sourced from **MyEtherWallet’s darklist:**  https://github.com/MyEtherWallet/ethereum-lists/blob/master/src/addresses/addresses-darklist.json
 - Includes:  
   - Address details  
   - Comments  
