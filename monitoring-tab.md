@@ -29,8 +29,8 @@ Recipient address
 Allows manual updates of all metrics and transactions for on-demand monitoring.    
 
 ## Security Applications
-Anomaly Detection: Identify unusual gas price spikes or transaction volumes    
-Transaction Monitoring: Track recent activity for suspicious patterns    
-Network Health: Monitor gas prices and block progression    
-Real-time Alerting: Enable quick responses to suspicious activity    
+**Anomaly Detection:** Identify unusual gas price spikes or transaction volumes    
+**Transaction Monitoring:** Track recent activity for suspicious patterns    
+**Network Health:** Monitor gas prices and block progression    
+**Real-time Alerting:** Enable quick responses to suspicious activity    
 The Monitoring tab serves as your real-time window into Ethereum blockchain activity, providing essential data for effective security monitoring        
