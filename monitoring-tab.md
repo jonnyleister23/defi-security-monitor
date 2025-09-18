@@ -6,26 +6,26 @@
 The Monitoring tab provides real-time visibility into Ethereum blockchain activity, displaying key metrics and recent transactions to help detect potential security threats.
 
 ## Key Components
-1. Connection Status
-🟢 Connected to Ethereum - Active connection to the blockchain
-🔴 Not Connected - Connection issues detected
-2. Real-Time Gas Price Chart
+1. Connection Status    
+🟢 Connected to Ethereum - Active connection to the blockchain    
+🔴 Not Connected - Connection issues detected    
+3. Real-Time Gas Price Chart
 Visualizes gas price fluctuations over time
 Helps identify network congestion and potential attack patterns
 Stores historical data for trend analysis
-3. Key Metrics Panel
+4. Key Metrics Panel
 Metric	Example	Security Relevance
 Current Block	23,384,157	Confirms monitor is synced with blockchain
 Gas Price	1.02 Gwei	Indicates network congestion
 Large Transactions	1	Flags significant fund movements
 Smart Contract Interactions	10	Shows DeFi activity level
-4. Recent Activity Table
+5. Recent Activity Table
 Displays the most recent blockchain transactions with:
 Transaction timing 
 Transaction type 
 Amount transferred
 Recipient address
-5. Refresh Button
+6. Refresh Button
 Allows manual updates of all metrics and transactions for on-demand monitoring.
 
 ## Security Applications
