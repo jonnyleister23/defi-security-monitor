@@ -17,7 +17,7 @@ Stores historical data for trend analysis
 Metric	Example	Security Relevance    
 Current Block	23,384,157	Confirms monitor is synced with blockchain    
 Gas Price	1.02 Gwei	Indicates network congestion    
-Large Transactions	1	Flags significant fund movements    
+Large Transactions (Flags significant fund movements)    
 Smart Contract Interactions	10	Shows DeFi activity level    
 5. Recent Activity Table    
 Displays the most recent blockchain transactions with:    
@@ -29,8 +29,8 @@ Recipient address
 Allows manual updates of all metrics and transactions for on-demand monitoring.    
 
 ## Security Applications
-Anomaly Detection: Identify unusual gas price spikes or transaction volumes
-Transaction Monitoring: Track recent activity for suspicious patterns
-Network Health: Monitor gas prices and block progression
-Real-time Alerting: Enable quick responses to suspicious activity
-The Monitoring tab serves as your real-time window into Ethereum blockchain activity, providing essential data for effective security monitoring.
+Anomaly Detection: Identify unusual gas price spikes or transaction volumes    
+Transaction Monitoring: Track recent activity for suspicious patterns    
+Network Health: Monitor gas prices and block progression    
+Real-time Alerting: Enable quick responses to suspicious activity    
+The Monitoring tab serves as your real-time window into Ethereum blockchain activity, providing essential data for effective security monitoring        
